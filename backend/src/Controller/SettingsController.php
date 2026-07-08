@@ -12,50 +12,49 @@ use Slim\Psr7\Response;
 
 final class SettingsController
 {
-    public function __construct(private SettingsService $settingsService)
-    {
+  public function __construct(private SettingsService $settingsService) {}
+
+  public function index(Request $request, Response $response): Response
+  {
+    $settings = $this->settingsService->getSettings();
+
+    $response->getBody()->write(json_encode($settings));
+
+    return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+  }
+
+  public function update(Request $request, Response $response): Response
+  {
+    $data = $request->getParsedBody();
+
+    if (isset($data['common_prefix']) && \is_string($data['common_prefix'])) {
+      $data['common_prefix'] = \array_values(\array_filter(
+        \array_map('trim', \explode(',', $data['common_prefix'])),
+        static fn($v) => '' !== $v,
+      ));
     }
 
-    public function index(Request $request, Response $response): Response
-    {
-        $settings = $this->settingsService->getSettings();
-        $response->getBody()->write(\json_encode($settings));
+    try {
+      v::arrayType()
+        ->key('logs_directory', v::stringType()->notEmpty())
+        ->key('common_prefix', v::arrayType()->each(v::stringType()->notEmpty()))
+        ->assert($data);
+    } catch (NestedValidationException $e) {
+      $response->getBody()->write(\json_encode([
+        'error'    => 'Validation failed',
+        'messages' => $e->getMessages(),
+      ]));
 
-        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+      return $response->withHeader('Content-Type', 'application/json')->withStatus(422);
     }
 
-    public function update(Request $request, Response $response): Response
-    {
-        $data = $request->getParsedBody();
+    $updatedSettings = $this->settingsService->updateSettings([
+      'logs_directory' => $data['logs_directory'],
+      'common_prefix'  => $data['common_prefix'],
+    ]);
 
-        if (isset($data['common_prefix']) && \is_string($data['common_prefix'])) {
-            $data['common_prefix'] = \array_values(\array_filter(
-                \array_map('trim', \explode(',', $data['common_prefix'])),
-                static fn ($v) => '' !== $v,
-            ));
-        }
+    $response->getBody()->write(\json_encode($updatedSettings));
 
-        try {
-            v::arrayType()
-                ->key('logs_directory', v::stringType()->notEmpty())
-                ->key('common_prefix', v::arrayType()->each(v::stringType()->notEmpty()))
-                ->assert($data);
-        } catch (NestedValidationException $e) {
-            $response->getBody()->write(\json_encode([
-                'error'    => 'Validation failed',
-                'messages' => $e->getMessages(),
-            ]));
-
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(422);
-        }
-
-        $updatedSettings = $this->settingsService->updateSettings([
-            'logs_directory' => $data['logs_directory'],
-            'common_prefix'  => $data['common_prefix'],
-        ]);
-
-        $response->getBody()->write(\json_encode($updatedSettings));
-
-        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
-    }
+    return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+  }
 }

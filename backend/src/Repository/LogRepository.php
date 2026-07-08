@@ -139,7 +139,7 @@ final class LogRepository
 
     public function findCurrentLogs(): array
     {
-        $sql  = "SELECT * FROM log_files WHERE source = 'sync'";
+        $sql  = "SELECT * FROM log_files WHERE source = 'sync' ORDER BY file_modified_at DESC";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute();
 
@@ -166,8 +166,7 @@ final class LogRepository
                 return \mb_substr($entry['file_modified_at'], 0, 10) === $today;
             });
 
-            $current = !empty($todaysEntries) ? $todaysEntries[0] : $entries[0];
-
+            $current  = !empty($todaysEntries) ? $todaysEntries[0] : $entries[0];
             $children = \array_slice(\array_values(\array_filter($entries, static function ($entry) use ($current) {
                 return $entry['id'] !== $current['id'];
             })), 0, 10);

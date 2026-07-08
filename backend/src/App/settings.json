@@ -1,4 +1,1 @@
-{
-    "logs_directory": "/mnt/logger",
-    "common_prefix": []
-}
+{"logs_directory":"","allowed_extensions":["txt"]}

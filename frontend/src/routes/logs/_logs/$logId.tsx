@@ -3,7 +3,10 @@ import { logsQueryOptions } from "@/lib/api/logs"
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft } from "lucide-react"
-import { useSuspenseInfiniteQuery, useSuspenseQuery } from "@tanstack/react-query"
+import {
+  useSuspenseInfiniteQuery,
+  useSuspenseQuery,
+} from "@tanstack/react-query"
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
@@ -92,9 +95,15 @@ function LogsInfoPage() {
           </div>
 
           {/* Log content */}
-          <div ref={contentRef} className="scrollbar-thin flex-1 overflow-y-auto">
+          <div
+            ref={contentRef}
+            className="scrollbar-thin flex-1 overflow-y-auto"
+          >
             {hasPreviousPage && (
-              <div className="flex justify-center border-b p-2" style={{ overflowAnchor: "none" }}>
+              <div
+                className="flex justify-center border-b p-2"
+                style={{ overflowAnchor: "none" }}
+              >
                 <Button
                   variant="outline"
                   size="sm"

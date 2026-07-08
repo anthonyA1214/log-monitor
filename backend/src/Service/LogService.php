@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace LogMonitor\Backend\Service;
 
-use LogMonitor\Backend\App\Settings;
 use LogMonitor\Backend\Repository\LogRepository;
+use LogMonitor\Backend\Repository\SettingsRepository;
 
 final class LogService
 {
   public function __construct(
-    private Settings $settings,
+    private SettingsRepository $settingsRepository,
     private LogRepository $logRepository,
     private \PDO $pdo,
   ) {}
@@ -45,8 +45,10 @@ final class LogService
 
   public function syncLogs(): void
   {
-    $logsDir      = $this->settings->get('logs_directory');
-    $commonPrefix = $this->settings->get('common_prefix') ?: [];
+    $settings = $this->settingsRepository->get();
+
+    $logsDir      =  $settings['logs_directory'] ?? '';
+    $commonPrefix = $settings['common_prefix'] ?? [];
 
     $files       = \glob($logsDir . '/*.txt');
     $activeFiles = [];
@@ -139,25 +141,28 @@ final class LogService
   public function getLogContent(string $logId, ?int $offset = null): ?array
   {
     $log = $this->logRepository->findById((int) $logId);
+
     if (!$log) {
       return null;
     }
 
     $filePath = $log['file_path'];
+
     if (!\file_exists($filePath)) {
       return null;
     }
 
-    $fileSize = \filesize($filePath);
+    $fileSize  = \filesize($filePath);
     $chunkSize = CHUNK_SIZE * 10; // Define your chunk size here
 
-    if ($offset === null) {
-      $offset = max(0, $fileSize - $chunkSize);
+    if (null === $offset) {
+      $offset = \max(0, $fileSize - $chunkSize);
     }
 
-    $offset = max(0, min($offset, $fileSize));
+    $offset = \max(0, \min($offset, $fileSize));
 
     $fp = \fopen($filePath, 'rb');
+
     if (!$fp) {
       return null;
     }
@@ -167,10 +172,10 @@ final class LogService
     \fclose($fp);
 
     return [
-      'content' => $content,
-      'offset'  => $offset,
-      'next_offset' => min($offset + $chunkSize, $fileSize),
-      'has_more' => ($offset + $chunkSize) < $fileSize,
+      'content'     => $content,
+      'offset'      => $offset,
+      'next_offset' => \min($offset + $chunkSize, $fileSize),
+      'has_more'    => ($offset + $chunkSize) < $fileSize,
     ];
   }
 

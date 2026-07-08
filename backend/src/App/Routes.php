@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use LogMonitor\Backend\Controller\DashboardController;
 use LogMonitor\Backend\Controller\LogController;
 use LogMonitor\Backend\Controller\SettingsController;
 use Slim\App;
@@ -9,6 +10,11 @@ use Slim\Routing\RouteCollectorProxy;
 
 return static function (App $app): void {
     $app->group('/api', static function (RouteCollectorProxy $group): void {
+        // api/dashboard
+        $group->group('/dashboard', static function (RouteCollectorProxy $group): void {
+            $group->get('', [DashboardController::class, 'index']);
+        });
+
         // api/logs
         $group->group('/logs', static function (RouteCollectorProxy $group): void {
             $group->get('', [LogController::class, 'index']);
