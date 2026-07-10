@@ -5,15 +5,40 @@ declare(strict_types=1);
 namespace LogMonitor\Backend\Service;
 
 use LogMonitor\Backend\Repository\LogRepository;
-use LogMonitor\Backend\Repository\SettingsRepository;
 
 final class LogService
 {
   public function __construct(
-    private SettingsRepository $settingsRepository,
+    private SettingsService $settingsService,
     private LogRepository $logRepository,
     private \PDO $pdo,
   ) {}
+
+  public function getLogFiles(): array
+  {
+    $logs   = $this->logRepository->findCurrentLogs();
+    $result = [];
+
+    foreach ($logs as $log) {
+      $filePath = $log['file_path'];
+
+      if (!\file_exists($filePath)) {
+        $this->logRepository->markInactiveById((int) $log['id']);
+
+        continue; // Skip files that no longer exist
+      }
+
+      $fileModifiedAt = \date('Y-m-d H:i:s', \filemtime($filePath));
+
+      if ($fileModifiedAt !== $log['file_modified_at']) {
+        $this->logRepository->updateModifiedAt((int) $log['id'], $fileModifiedAt);
+      }
+
+      $result[] = $log;
+    }
+
+    return $result;
+  }
 
   public function addLogFiles(array $logs): array
   {
@@ -45,10 +70,10 @@ final class LogService
 
   public function syncLogs(): void
   {
-    $settings = $this->settingsRepository->get();
+    $settings = $this->settingsService->getSettings();
 
     $logsDir      =  $settings['logs_directory'] ?? '';
-    $commonPrefix = $settings['common_prefix'] ?? [];
+    $commonPrefix = $settings['common_prefix']   ?? [];
 
     $files       = \glob($logsDir . '/*.txt');
     $activeFiles = [];
@@ -85,32 +110,6 @@ final class LogService
 
     $this->logRepository->markInactive($activeFiles);
     $this->logRepository->deactivateOldLogs();
-  }
-
-  public function getLogFiles(): array
-  {
-    $logs   = $this->logRepository->findCurrentLogs();
-    $result = [];
-
-    foreach ($logs as $log) {
-      $filePath = $log['file_path'];
-
-      if (!\file_exists($filePath)) {
-        $this->logRepository->markInactiveById((int) $log['id']);
-
-        continue; // Skip files that no longer exist
-      }
-
-      $fileModifiedAt = \date('Y-m-d H:i:s', \filemtime($filePath));
-
-      if ($fileModifiedAt !== $log['file_modified_at']) {
-        $this->logRepository->updateModifiedAt((int) $log['id'], $fileModifiedAt);
-      }
-
-      $result[] = $log;
-    }
-
-    return $result;
   }
 
   public function getLogInfo(string $logId): ?array
