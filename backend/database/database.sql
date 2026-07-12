@@ -35,13 +35,13 @@ CREATE TABLE IF NOT EXISTS `dashboard_slots` (
   `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
   PRIMARY KEY (`id`),
-  UNIQUE KEY `dashboard_slots_section_slot_number_unique` (`section`, `slot_number`),
+  UNIQUE KEY `dashboard_slots_section_slot_number_unique` (`section`, `slot_number`)
 );
 
-INSERT INTO dashboard_slots (section, slot_number, log_file_id) VALUES
+INSERT INTO dashboard_slots (section, slot_number, title) VALUES
   ('priority', 1, NULL),
   ('priority', 2, NULL),
-  ('priority', 2, NULL),
+  ('priority', 3, NULL),
   ('priority', 4, NULL),
   ('less_priority', 1, NULL),
   ('less_priority', 2, NULL),

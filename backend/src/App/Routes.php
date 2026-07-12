@@ -12,7 +12,10 @@ return static function (App $app): void {
     $app->group('/api', static function (RouteCollectorProxy $group): void {
         // api/dashboard
         $group->group('/dashboard', static function (RouteCollectorProxy $group): void {
-            $group->get('', [DashboardController::class, 'index']);
+            $group->get('/slots', [DashboardController::class, 'index']);
+            $group->get('/titles', [DashboardController::class, 'titles']);
+            $group->put('/slots/{section}/{slotNumber}', [DashboardController::class, 'assignSlot']);
+            $group->delete('/slots/{section}/{slotNumber}', [DashboardController::class, 'clearSlot']);
         });
 
         // api/logs
