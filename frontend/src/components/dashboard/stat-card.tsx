@@ -1,29 +1,30 @@
 import { dashboardStatCardDotColorMap } from "@/lib/color-map"
 import { cn } from "@/lib/utils"
 import { format } from "date-fns"
-import { Pencil } from "lucide-react"
+import { Pencil, X } from "lucide-react"
 import prettyBytes from "pretty-bytes"
 import { Button } from "../ui/button"
 import { useState } from "react"
 
 interface StatCardProps {
-  label: string
+  schedule: string
   fileName: string
   fileModifiedAt: string
   fileSize: number
 }
 
 export default function StatCard({
-  label,
+  schedule,
   fileName,
   fileModifiedAt,
   fileSize,
 }: StatCardProps) {
   const [hover, setHover] = useState(false)
+  const [isEditing, setIsEditing] = useState(false)
 
   return (
     <div
-      className="flex h-fit flex-col rounded-lg border p-4 bg-white"
+      className="flex h-[15vh] flex-col rounded-lg border p-4 bg-white"
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
     >
@@ -33,21 +34,23 @@ export default function StatCard({
           <div
             className={cn(
               "size-2.5 rounded-full",
-              dashboardStatCardDotColorMap[label.toLowerCase()]
+              dashboardStatCardDotColorMap[schedule.toLowerCase()]
             )}
           />
-          <span className="font-medium">{label.toUpperCase()}</span>
+          <span className="font-medium">{schedule.toUpperCase()}</span>
         </div>
 
         {hover && (
-          <Button size="icon-xs" variant="ghost">
-            <Pencil />
+          <Button size="icon-xs" variant="ghost" onClick={() => setIsEditing(!isEditing)}>
+            {isEditing ? <X /> : <Pencil />}
           </Button>
         )}
       </div>
 
+      <div className="flex-1" />
+
       {/* file name */}
-      <span className="font-bold text-lg">{fileName}</span>
+      <span className="font-bold text-lg truncate">{fileName}</span>
 
       {/* file modified at and file size */}
       <div className="flex items-center justify-between">

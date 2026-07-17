@@ -1,33 +1,7 @@
 import { env } from "@/env"
 import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query"
 import type { AddLogs, Log, LogContent, LogInfo } from "../schemas/logs"
-
-type LogDTO = {
-  id: string
-  title: string
-  file_name: string
-  file_modified_at: string
-  source: "sync" | "manual"
-  status: "active" | "inactive"
-  children?: LogDTO[]
-}
-
-type LogInfoDTO = {
-  id: string
-  title: string
-  file_name: string
-  file_path: string
-  file_modified_at: string
-  source: "sync" | "manual"
-  status: "active" | "inactive"
-}
-
-type LogContentDTO = {
-  content: string
-  offset: number
-  next_offset: number
-  has_more: boolean
-}
+import camelcaseKeys from 'camelcase-keys'
 
 async function syncLogs(): Promise<void> {
   const res = await fetch(`${env.VITE_API_URL}/api/logs/sync`, {
@@ -44,24 +18,7 @@ async function fetchLogs(): Promise<Log[]> {
   if (!res.ok) {
     throw new Error("Failed to fetch logs")
   }
-  const data: LogDTO[] = await res.json()
-  return data.map((log) => ({
-    id: log.id,
-    title: log.title,
-    fileName: log.file_name,
-    fileModifiedAt: log.file_modified_at,
-    source: log.source,
-    status: log.status,
-    children:
-      log.children?.map((child) => ({
-        id: child.id,
-        title: child.title,
-        fileName: child.file_name,
-        fileModifiedAt: child.file_modified_at,
-        source: child.source,
-        status: child.status,
-      })) ?? [],
-  }))
+  return await res.json()
 }
 
 async function fetchLogInfo(logId: string): Promise<LogInfo> {
@@ -69,16 +26,8 @@ async function fetchLogInfo(logId: string): Promise<LogInfo> {
   if (!res.ok) {
     throw new Error(`Failed to fetch log info for ${logId}`)
   }
-  const data: LogInfoDTO = await res.json()
-  return {
-    id: data.id,
-    title: data.title,
-    fileName: data.file_name,
-    filePath: data.file_path,
-    fileModifiedAt: data.file_modified_at,
-    source: data.source,
-    status: data.status,
-  }
+
+  return await res.json()
 }
 
 async function fetchLogContent(
@@ -95,13 +44,7 @@ async function fetchLogContent(
     throw new Error(`Failed to fetch log content for ${logId}`)
   }
 
-  const data: LogContentDTO = await res.json()
-  return {
-    content: data.content,
-    offset: data.offset,
-    nextOffset: data.next_offset,
-    hasMore: data.has_more,
-  }
+  return await res.json()
 }
 
 async function addLogs(data: AddLogs): Promise<Log[]> {
@@ -125,26 +68,7 @@ async function addLogs(data: AddLogs): Promise<Log[]> {
     throw result
   }
 
-  const logsData: LogDTO[] = Array.isArray(result.logs)
-    ? result.logs
-    : [result.logs]
-  return logsData.map((log) => ({
-    id: log.id,
-    title: log.title,
-    fileName: log.file_name,
-    fileModifiedAt: log.file_modified_at,
-    source: log.source,
-    status: log.status,
-    children:
-      log.children?.map((child) => ({
-        id: child.id,
-        title: child.title,
-        fileName: child.file_name,
-        fileModifiedAt: child.file_modified_at,
-        source: child.source,
-        status: child.status,
-      })) ?? [],
-  }))
+  return await res.json()
 }
 
 async function updateLogInfo(
@@ -166,16 +90,7 @@ async function updateLogInfo(
     throw new Error(`Failed to update log info for ${logId}`)
   }
 
-  const data: LogInfoDTO = await res.json()
-  return {
-    id: data.id,
-    title: data.title,
-    fileName: data.file_name,
-    filePath: data.file_path,
-    fileModifiedAt: data.file_modified_at,
-    source: data.source,
-    status: data.status,
-  }
+  return await res.json()
 }
 
 export const logsQueryOptions = {
@@ -183,12 +98,14 @@ export const logsQueryOptions = {
     queryOptions({
       queryKey: ["logs"],
       queryFn: fetchLogs,
+      select: (data) => camelcaseKeys(data, { deep: true }),
     }),
 
   info: (logId: string) =>
     queryOptions({
       queryKey: ["logs", logId],
       queryFn: () => fetchLogInfo(logId),
+      select: (data) => camelcaseKeys(data, { deep: true }),
     }),
 
   content: (logId: string) =>
@@ -202,6 +119,10 @@ export const logsQueryOptions = {
         first.offset > 0
           ? Math.max(0, first.offset - 10 * 1024 * 1024)
           : undefined,
+      select: (data) => ({
+        pages: data.pages.map((page) => camelcaseKeys(page, { deep: true })),
+        pageParams: data.pageParams,
+      }),
     }),
 }
 

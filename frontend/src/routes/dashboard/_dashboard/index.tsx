@@ -1,66 +1,34 @@
 import { ContentLayout } from "@/components/admin-panel/content-layout"
+import EmptyStatCard from "@/components/dashboard/empty-stat-card"
 import OnDemandCard from "@/components/dashboard/on-demand-card"
 import StatCard from "@/components/dashboard/stat-card"
 import { Separator } from "@/components/ui/separator"
+import { dashboardQueryOptions } from "@/lib/api/dashboard"
+import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
 import { Fragment } from "react/jsx-runtime"
 export const Route = createFileRoute("/dashboard/_dashboard/")({
+  loader: ({ context: { queryClient } }) => {
+    return queryClient.ensureQueryData(dashboardQueryOptions.slots())
+  },
+  errorComponent: ({ error }) => (
+    <div className="flex min-h-svh items-center justify-center">
+      <p className="text-muted-foreground">{error.message}</p>
+    </div>
+  ),
   component: RouteComponent,
 })
 
 function RouteComponent() {
-  const onDemandExports = [
-    {
-      fileName: "Artrade",
-      fileModifiedAt: "2026-06-10",
-      fileSize: 512345677,
-    },
-    {
-      fileName: "Bexchange",
-      fileModifiedAt: "2026-06-08",
-      fileSize: 89345120,
-    },
-    {
-      fileName: "Cryptovault",
-      fileModifiedAt: "2026-06-05",
-      fileSize: 1345678900,
-    },
-    {
-      fileName: "Dexmarket",
-      fileModifiedAt: "2026-05-29",
-      fileSize: 234567890,
-    },
-    {
-      fileName: "Etherscan_Export",
-      fileModifiedAt: "2026-05-22",
-      fileSize: 67890123,
-    },
-    {
-      fileName: "Fintrack",
-      fileModifiedAt: "2026-05-15",
-      fileSize: 456789012,
-    },
-    {
-      fileName: "Grainledger",
-      fileModifiedAt: "2026-05-10",
-      fileSize: 123456789,
-    },
-    {
-      fileName: "Hashflow",
-      fileModifiedAt: "2026-05-02",
-      fileSize: 987654321,
-    },
-    {
-      fileName: "Ionpay",
-      fileModifiedAt: "2026-04-25",
-      fileSize: 34567890,
-    },
-    {
-      fileName: "Jettonswap",
-      fileModifiedAt: "2026-04-18",
-      fileSize: 156789012,
-    },
-  ]
+  const slots = useSuspenseQuery({
+    ...dashboardQueryOptions.slots(),
+  })
+
+  console.log(slots.data)
+
+  const titles = useSuspenseQuery({
+    ...dashboardQueryOptions.titles(),
+  })
 
   return (
     <ContentLayout>
@@ -88,10 +56,11 @@ function RouteComponent() {
               </div>
 
               <div className="grid grid-cols-4 gap-4 border p-4 rounded-lg">
-                <StatCard label="daily" fileName="test" fileModifiedAt="2026-04-01" fileSize={1000} />
-                <StatCard label="daily" fileName="test" fileModifiedAt="2026-04-01" fileSize={1000} />
-                <StatCard label="daily" fileName="test" fileModifiedAt="2026-04-01" fileSize={1000} />
-                <StatCard label="daily" fileName="test" fileModifiedAt="2026-04-01" fileSize={1000} />
+                {slots.data.priority.map((item, i) => item.log !== null ? (
+                  <StatCard key={`priority-card-${i}`} schedule={item.schedule} fileName={item.log.fileName} fileModifiedAt={item.log.fileModifiedAt} fileSize={item.log.fileSize} />
+                ) : (
+                  <EmptyStatCard key={`empty-stat-card-${i}`} />
+                ))}
               </div>
             </div>
 
@@ -103,10 +72,10 @@ function RouteComponent() {
               </div>
 
               <div className="grid grid-cols-4 gap-4 border p-4 rounded-lg">
-                <StatCard label="daily" fileName="test" fileModifiedAt="2026-04-01" fileSize={1000} />
-                <StatCard label="daily" fileName="test" fileModifiedAt="2026-04-01" fileSize={1000} />
-                <StatCard label="daily" fileName="test" fileModifiedAt="2026-04-01" fileSize={1000} />
-                <StatCard label="daily" fileName="test" fileModifiedAt="2026-04-01" fileSize={1000} />
+                <StatCard schedule="daily" fileName="test" fileModifiedAt="2026-04-01" fileSize={1000} />
+                <StatCard schedule="daily" fileName="test" fileModifiedAt="2026-04-01" fileSize={1000} />
+                <StatCard schedule="daily" fileName="test" fileModifiedAt="2026-04-01" fileSize={1000} />
+                <StatCard schedule="daily" fileName="test" fileModifiedAt="2026-04-01" fileSize={1000} />
               </div>
             </div>
           </div>
@@ -120,20 +89,22 @@ function RouteComponent() {
 
             {/* cards */}
             <div className="scrollbar-thin min-h-0 flex-1 overflow-y-auto rounded-lg border">
-              {onDemandExports.map((item, i) => (
-                <Fragment key={`on-demand-card-${i}`}>
-                  {i !== 0 && <Separator />}
 
-                  <OnDemandCard
-                    fileName={item.fileName}
-                    fileModifiedAt={item.fileModifiedAt}
-                    fileSize={item.fileSize}
-                  />
-                </Fragment>
-              ))}
+              {/*   {onDemandExports.map((item, i) => ( */}
+              {/*     <Fragment key={`on-demand-card-${i}`}> */}
+              {/*       {i !== 0 && <Separator />} */}
+              {/**/}
+              {/*       <OnDemandCard */}
+              {/*         fileName={item.fileName} */}
+              {/*         fileModifiedAt={item.fileModifiedAt} */}
+              {/*         fileSize={item.fileSize} */}
+              {/*       /> */}
+              {/*     </Fragment> */}
+              {/*   ))} */}
+              {/* </div> */}
             </div>
+            {/*  */}
           </div>
-          {/*  */}
         </div>
       </div>
     </ContentLayout>

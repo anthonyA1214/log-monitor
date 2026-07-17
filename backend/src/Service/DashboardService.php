@@ -23,9 +23,14 @@ final class DashboardService
     foreach ($slots as $slot) {
       $log = $slot['title'] ? $this->logRepository->getLatestLogByTitle($slot['title']) : null;
 
+      if ($log !== null && file_exists($log['file_path'])) {
+        $log['file_size'] = filesize($log['file_path']);
+      }
+
       $grouped[$slot['section']][] = [
         'slot_number' => (int) $slot['slot_number'],
         'log'         => $log,
+        'schedule'   => $slot['schedule'],
       ];
     }
 

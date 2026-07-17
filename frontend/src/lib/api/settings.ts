@@ -1,10 +1,7 @@
 import { env } from "@/env"
 import type { Settings } from "../schemas/settings"
-
-type SettingsDTO = {
-  logs_directory: string
-  common_prefix: string
-}
+import camelcaseKeys from "camelcase-keys"
+import { queryOptions } from "@tanstack/react-query"
 
 async function fetchSettings(): Promise<Settings> {
   const res = await fetch(`${env.VITE_API_URL}/api/settings`)
@@ -13,12 +10,7 @@ async function fetchSettings(): Promise<Settings> {
     throw new Error("Failed to fetch settings")
   }
 
-  const data: SettingsDTO = await res.json()
-
-  return {
-    logsDirectory: data.logs_directory,
-    commonPrefix: data.common_prefix,
-  }
+  return await res.json()
 }
 
 async function updateSettings(settings: Settings): Promise<Settings> {
@@ -37,19 +29,16 @@ async function updateSettings(settings: Settings): Promise<Settings> {
     throw new Error("Failed to update settings")
   }
 
-  const data: SettingsDTO = await res.json()
-
-  return {
-    logsDirectory: data.logs_directory,
-    commonPrefix: data.common_prefix,
-  }
+  return await res.json()
 }
 
 export const settingsQueryOptions = {
-  all: () => ({
-    queryKey: ["settings"],
-    queryFn: fetchSettings,
-  }),
+  all: () =>
+    queryOptions({
+      queryKey: ["settings"],
+      queryFn: fetchSettings,
+      select: (data) => camelcaseKeys(data, { deep: true }),
+    }),
 }
 
 export { updateSettings }
