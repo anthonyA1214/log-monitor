@@ -42,9 +42,9 @@ final class DashboardService
     return $this->logRepository->getAllTitles();
   }
 
-  public function assignSlot(string $section, int $slotNumber, string $title): void
+  public function assignSlot(string $section, int $slotNumber, string $title, string $schedule): void
   {
-    $this->dashboardRepository->assignSlot($section, $slotNumber, $title);
+    $this->dashboardRepository->assignSlot($section, $slotNumber, $title, $schedule);
   }
 
   public function clearSlot(string $section, int $slotNumber): void

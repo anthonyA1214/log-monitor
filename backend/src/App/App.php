@@ -16,7 +16,7 @@ $dotenv  = Dotenv\Dotenv::createImmutable($baseDir);
 $envFile = $baseDir . '/.env';
 
 if (\file_exists($envFile)) {
-    $dotenv->load();
+  $dotenv->load();
 }
 
 $dotenv->required(['DB_HOST', 'DB_USER', 'DB_PASS', 'DB_NAME', 'DB_PORT']);

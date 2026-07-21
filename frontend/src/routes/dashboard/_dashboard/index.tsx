@@ -2,10 +2,13 @@ import { ContentLayout } from "@/components/admin-panel/content-layout"
 import EmptyStatCard from "@/components/dashboard/empty-stat-card"
 import OnDemandCard from "@/components/dashboard/on-demand-card"
 import StatCard from "@/components/dashboard/stat-card"
+import SlotEditor from "@/components/forms/dashboard/slot-editor"
 import { Separator } from "@/components/ui/separator"
-import { dashboardQueryOptions } from "@/lib/api/dashboard"
-import { useSuspenseQuery } from "@tanstack/react-query"
+import { assignSlot, dashboardQueryOptions } from "@/lib/api/dashboard"
+import type { SlotForm } from "@/lib/schemas/dashboard"
+import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
+import { useState } from "react"
 import { Fragment } from "react/jsx-runtime"
 export const Route = createFileRoute("/dashboard/_dashboard/")({
   loader: ({ context: { queryClient } }) => {
@@ -20,15 +23,31 @@ export const Route = createFileRoute("/dashboard/_dashboard/")({
 })
 
 function RouteComponent() {
+  const [editingSlot, setEditingSlot] = useState<{ section: string, slotNumber: number } | null>(null);
+
+  const queryClient = useQueryClient()
+
   const slots = useSuspenseQuery({
     ...dashboardQueryOptions.slots(),
   })
 
-  console.log(slots.data)
-
   const titles = useSuspenseQuery({
     ...dashboardQueryOptions.titles(),
   })
+
+  const { mutateAsync } = useMutation({
+    mutationFn: (data: SlotForm) => assignSlot(editingSlot?.section!, editingSlot?.slotNumber!, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: dashboardQueryOptions.slots().queryKey,
+      })
+      setEditingSlot(null)
+    },
+  })
+
+  const handleSave = async (data: SlotForm) => {
+    await mutateAsync(data)
+  }
 
   return (
     <ContentLayout>
@@ -56,11 +75,25 @@ function RouteComponent() {
               </div>
 
               <div className="grid grid-cols-4 gap-4 border p-4 rounded-lg">
-                {slots.data.priority.map((item, i) => item.log !== null ? (
-                  <StatCard key={`priority-card-${i}`} schedule={item.schedule} fileName={item.log.fileName} fileModifiedAt={item.log.fileModifiedAt} fileSize={item.log.fileSize} />
-                ) : (
-                  <EmptyStatCard key={`empty-stat-card-${i}`} />
-                ))}
+                {slots.data.priority.map((item, i) =>
+                  editingSlot?.section === "priority" && editingSlot?.slotNumber === item?.slotNumber ? (
+                    <SlotEditor
+                      key={`slot-editor-priority-${i}`}
+                      currentSchedule={item?.schedule}
+                      currentTitle={item?.log?.fileName}
+                      availableTitles={titles.data}
+                      onSave={handleSave}
+                      onCancel={() => {
+                        setEditingSlot(null)
+                      }}
+                    />
+                  ) : item.log !== null ? (<StatCard key={`priority-card-${i}`} schedule={item.schedule} fileName={item.log.fileName} fileModifiedAt={item.log.fileModifiedAt} fileSize={item.log.fileSize} />
+                  ) : (
+                    <EmptyStatCard
+                      key={`priority-empty-stat-card-${i}`}
+                      onClick={() => setEditingSlot({ section: "priority", slotNumber: item?.slotNumber })}
+                    />
+                  ))}
               </div>
             </div>
 
@@ -72,10 +105,25 @@ function RouteComponent() {
               </div>
 
               <div className="grid grid-cols-4 gap-4 border p-4 rounded-lg">
-                <StatCard schedule="daily" fileName="test" fileModifiedAt="2026-04-01" fileSize={1000} />
-                <StatCard schedule="daily" fileName="test" fileModifiedAt="2026-04-01" fileSize={1000} />
-                <StatCard schedule="daily" fileName="test" fileModifiedAt="2026-04-01" fileSize={1000} />
-                <StatCard schedule="daily" fileName="test" fileModifiedAt="2026-04-01" fileSize={1000} />
+                {slots.data.lessPriority.map((item, i) =>
+                  editingSlot?.section === "lessPriority" && editingSlot?.slotNumber === item?.slotNumber ? (
+                    <SlotEditor
+                      key={`slot-editor-lessPriority-${i}`}
+                      currentSchedule={item?.schedule}
+                      currentTitle={item?.log?.fileName}
+                      availableTitles={titles.data}
+                      onSave={handleSave}
+                      onCancel={() => {
+                        setEditingSlot(null)
+                      }}
+                    />
+                  ) : item.log !== null ? (<StatCard key={`lessPriority-card-${i}`} schedule={item.schedule} fileName={item.log.fileName} fileModifiedAt={item.log.fileModifiedAt} fileSize={item.log.fileSize} />
+                  ) : (
+                    <EmptyStatCard
+                      key={`lessPriority-empty-stat-card-${i}`}
+                      onClick={() => setEditingSlot({ section: "lessPriority", slotNumber: item?.slotNumber })}
+                    />
+                  ))}
               </div>
             </div>
           </div>

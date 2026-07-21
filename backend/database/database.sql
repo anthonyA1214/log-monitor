@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS `dashboard_slots` (
   `section` ENUM('priority', 'less_priority') NOT NULL,
   `slot_number` INT NOT NULL,
   `title` VARCHAR(255),
-  `schedule` ENUM('recursive', 'daily') NOT NULL DEFAULT 'recursive',
+  `schedule` ENUM('recursive', 'daily'),
   `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
   PRIMARY KEY (`id`),

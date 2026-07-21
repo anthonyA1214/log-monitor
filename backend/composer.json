@@ -11,7 +11,8 @@
         "php-di/php-di": "^7.1",
         "respect/validation": "^2.4",
         "vlucas/phpdotenv": "^5.6",
-        "php-di/slim-bridge": "^3.4"
+        "php-di/slim-bridge": "^3.4",
+        "joachim-n/case-converter": "^1.0"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.95",

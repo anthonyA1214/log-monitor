@@ -9,9 +9,9 @@ export const logSchema = z.object({
 })
 
 export const slotSchema = z.object({
-  slotNumber: z.string(),
+  slotNumber: z.number(),
   log: logSchema,
-  schedule: z.string(),
+  schedule: z.enum(['recursive', 'daily']),
 })
 
 export const slotsSchema = z.object({
@@ -19,7 +19,7 @@ export const slotsSchema = z.object({
   lessPriority: z.array(slotSchema),
 })
 
-export const addSlotSchema = (titles: string[]) => z.object({
+export const slotFormSchema = (titles: string[]) => z.object({
   schedule: z.enum(["recursive", "daily"]),
   title: z.string().min(1, "Title is required").refine((val) => titles.includes(val), {
     message: "Selected log title is not valid",
@@ -27,5 +27,5 @@ export const addSlotSchema = (titles: string[]) => z.object({
 })
 
 export type Slots = z.infer<typeof slotsSchema>
-export type AddSlot = z.infer<ReturnType<typeof addSlotSchema>>
+export type SlotForm = z.infer<ReturnType<typeof slotFormSchema>>
 
