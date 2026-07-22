@@ -6,7 +6,11 @@ import SlotEditor from "@/components/forms/dashboard/slot-editor"
 import { Separator } from "@/components/ui/separator"
 import { assignSlot, dashboardQueryOptions } from "@/lib/api/dashboard"
 import type { SlotForm } from "@/lib/schemas/dashboard"
-import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query"
+import {
+  useMutation,
+  useQueryClient,
+  useSuspenseQuery,
+} from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
 import { useState } from "react"
 import { Fragment } from "react/jsx-runtime"
@@ -23,7 +27,10 @@ export const Route = createFileRoute("/dashboard/_dashboard/")({
 })
 
 function RouteComponent() {
-  const [editingSlot, setEditingSlot] = useState<{ section: string, slotNumber: number } | null>(null);
+  const [editingSlot, setEditingSlot] = useState<{
+    section: string
+    slotNumber: number
+  } | null>(null)
 
   const queryClient = useQueryClient()
 
@@ -36,7 +43,8 @@ function RouteComponent() {
   })
 
   const { mutateAsync } = useMutation({
-    mutationFn: (data: SlotForm) => assignSlot(editingSlot?.section!, editingSlot?.slotNumber!, data),
+    mutationFn: (data: SlotForm) =>
+      assignSlot(editingSlot?.section!, editingSlot?.slotNumber!, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: dashboardQueryOptions.slots().queryKey,
@@ -74,26 +82,50 @@ function RouteComponent() {
                 <div className="h-px flex-1 bg-border" />
               </div>
 
-              <div className="grid grid-cols-4 gap-4 border p-4 rounded-lg">
+              <div className="grid grid-cols-4 gap-4 rounded-lg border p-4">
                 {slots.data.priority.map((item, i) =>
-                  editingSlot?.section === "priority" && editingSlot?.slotNumber === item?.slotNumber ? (
+                  editingSlot?.section === "priority" &&
+                  editingSlot?.slotNumber === item?.slotNumber ? (
                     <SlotEditor
                       key={`slot-editor-priority-${i}`}
                       currentSchedule={item?.schedule}
-                      currentTitle={item?.log?.fileName}
+                      currentTitle={item?.log?.title}
                       availableTitles={titles.data}
                       onSave={handleSave}
                       onCancel={() => {
                         setEditingSlot(null)
                       }}
                     />
-                  ) : item.log !== null ? (<StatCard key={`priority-card-${i}`} schedule={item.schedule} fileName={item.log.fileName} fileModifiedAt={item.log.fileModifiedAt} fileSize={item.log.fileSize} />
+                  ) : item.log !== null ? (
+                    <StatCard
+                      key={`priority-card-${i}`}
+                      schedule={item.schedule}
+                      fileName={item.log.fileName}
+                      fileModifiedAt={item.log.fileModifiedAt}
+                      fileSize={item.log.fileSize}
+                      onClick={() =>
+                        setEditingSlot({
+                          section: "priority",
+                          slotNumber: item?.slotNumber,
+                        })
+                      }
+                      isEditing={
+                        editingSlot?.section === "priority" &&
+                        editingSlot?.slotNumber === item?.slotNumber
+                      }
+                    />
                   ) : (
                     <EmptyStatCard
                       key={`priority-empty-stat-card-${i}`}
-                      onClick={() => setEditingSlot({ section: "priority", slotNumber: item?.slotNumber })}
+                      onClick={() =>
+                        setEditingSlot({
+                          section: "priority",
+                          slotNumber: item?.slotNumber,
+                        })
+                      }
                     />
-                  ))}
+                  )
+                )}
               </div>
             </div>
 
@@ -104,26 +136,50 @@ function RouteComponent() {
                 <div className="h-px flex-1 bg-border" />
               </div>
 
-              <div className="grid grid-cols-4 gap-4 border p-4 rounded-lg">
+              <div className="grid grid-cols-4 gap-4 rounded-lg border p-4">
                 {slots.data.lessPriority.map((item, i) =>
-                  editingSlot?.section === "lessPriority" && editingSlot?.slotNumber === item?.slotNumber ? (
+                  editingSlot?.section === "lessPriority" &&
+                  editingSlot?.slotNumber === item?.slotNumber ? (
                     <SlotEditor
                       key={`slot-editor-lessPriority-${i}`}
                       currentSchedule={item?.schedule}
-                      currentTitle={item?.log?.fileName}
+                      currentTitle={item?.log?.title}
                       availableTitles={titles.data}
                       onSave={handleSave}
                       onCancel={() => {
                         setEditingSlot(null)
                       }}
                     />
-                  ) : item.log !== null ? (<StatCard key={`lessPriority-card-${i}`} schedule={item.schedule} fileName={item.log.fileName} fileModifiedAt={item.log.fileModifiedAt} fileSize={item.log.fileSize} />
+                  ) : item.log !== null ? (
+                    <StatCard
+                      key={`lessPriority-card-${i}`}
+                      schedule={item.schedule}
+                      fileName={item.log.fileName}
+                      fileModifiedAt={item.log.fileModifiedAt}
+                      fileSize={item.log.fileSize}
+                      onClick={() =>
+                        setEditingSlot({
+                          section: "lessPriority",
+                          slotNumber: item?.slotNumber,
+                        })
+                      }
+                      isEditing={
+                        editingSlot?.section === "lessPriority" &&
+                        editingSlot?.slotNumber === item?.slotNumber
+                      }
+                    />
                   ) : (
                     <EmptyStatCard
                       key={`lessPriority-empty-stat-card-${i}`}
-                      onClick={() => setEditingSlot({ section: "lessPriority", slotNumber: item?.slotNumber })}
+                      onClick={() =>
+                        setEditingSlot({
+                          section: "lessPriority",
+                          slotNumber: item?.slotNumber,
+                        })
+                      }
                     />
-                  ))}
+                  )
+                )}
               </div>
             </div>
           </div>
@@ -137,7 +193,6 @@ function RouteComponent() {
 
             {/* cards */}
             <div className="scrollbar-thin min-h-0 flex-1 overflow-y-auto rounded-lg border">
-
               {/*   {onDemandExports.map((item, i) => ( */}
               {/*     <Fragment key={`on-demand-card-${i}`}> */}
               {/*       {i !== 0 && <Separator />} */}

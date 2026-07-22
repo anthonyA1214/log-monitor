@@ -11,6 +11,8 @@ interface StatCardProps {
   fileName: string
   fileModifiedAt: string
   fileSize: number
+  onClick: () => void
+  isEditing?: boolean
 }
 
 export default function StatCard({
@@ -18,13 +20,14 @@ export default function StatCard({
   fileName,
   fileModifiedAt,
   fileSize,
+  onClick,
+  isEditing = false,
 }: StatCardProps) {
   const [hover, setHover] = useState(false)
-  const [isEditing, setIsEditing] = useState(false)
 
   return (
     <div
-      className="flex h-[15vh] flex-col rounded-lg border p-4 bg-white"
+      className="flex h-[15vh] flex-col rounded-lg border bg-white p-4"
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
     >
@@ -41,7 +44,7 @@ export default function StatCard({
         </div>
 
         {hover && (
-          <Button size="icon-xs" variant="ghost" onClick={() => setIsEditing(!isEditing)}>
+          <Button size="icon-xs" variant="ghost" onClick={onClick}>
             {isEditing ? <X /> : <Pencil />}
           </Button>
         )}
@@ -50,11 +53,13 @@ export default function StatCard({
       <div className="flex-1" />
 
       {/* file name */}
-      <span className="font-bold text-lg truncate">{fileName}</span>
+      <span className="truncate text-lg font-bold">{fileName}</span>
 
       {/* file modified at and file size */}
       <div className="flex items-center justify-between">
-        <span className="text-muted-foreground">{format(new Date(fileModifiedAt), "MM-dd-yyyy")}</span>
+        <span className="text-muted-foreground">
+          {format(new Date(fileModifiedAt), "MM-dd-yyyy")}
+        </span>
         <span className="text-muted-foreground">{prettyBytes(fileSize)}</span>
       </div>
     </div>

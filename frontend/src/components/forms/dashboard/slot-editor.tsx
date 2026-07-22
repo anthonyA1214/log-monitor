@@ -1,16 +1,28 @@
-import { Button } from "@/components/ui/button";
-import { Field, FieldContent, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { slotFormSchema, type SlotForm } from "@/lib/schemas/dashboard";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Controller, useForm } from "react-hook-form";
+import { Button } from "@/components/ui/button"
+import {
+  Field,
+  FieldContent,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { slotFormSchema, type SlotForm } from "@/lib/schemas/dashboard"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Controller, useForm } from "react-hook-form"
 
 interface SlotEditorProps {
-  currentSchedule?: "recursive" | "daily";
-  currentTitle?: string;
-  availableTitles?: string[];
-  onSave: (data: SlotForm) => Promise<void>;
-  onCancel: () => void;
+  currentSchedule?: "recursive" | "daily"
+  currentTitle?: string
+  availableTitles?: string[]
+  onSave: (data: SlotForm) => Promise<void>
+  onCancel: () => void
 }
 
 export default function SlotEditor({
@@ -22,27 +34,35 @@ export default function SlotEditor({
 }: SlotEditorProps) {
   const form = useForm<SlotForm>({
     resolver: zodResolver(slotFormSchema(availableTitles || [])),
-    defaultValues: { schedule: currentSchedule || 'recursive', title: currentTitle || '' },
+    defaultValues: {
+      schedule: currentSchedule || "recursive",
+      title: currentTitle || "",
+    },
   })
 
   const onSubmit = async (data: SlotForm) => {
-    await onSave(data);
+    await onSave(data)
   }
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="flex h-[15vh] flex-col justify-center rounded-lg border p-4 ">
-      <FieldGroup className="overflow-y-auto scrollbar-thin">
-        <span>
-          {currentTitle ? `Editing slot` : "Add slot"}
-        </span>
+    <form
+      onSubmit={form.handleSubmit(onSubmit)}
+      className="flex h-[15vh] flex-col justify-center rounded-lg border p-4"
+    >
+      <FieldGroup className="scrollbar-thin overflow-y-auto">
+        <span>{currentTitle ? `Editing slot` : "Add slot"}</span>
         <Controller
           name="schedule"
           control={form.control}
           render={({ field, fieldState }) => (
             <Field orientation="responsive" data-invalid={fieldState.invalid}>
               <FieldContent>
-                <FieldLabel htmlFor="form-rhf-select-schedule">Schedule</FieldLabel>
-                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                <FieldLabel htmlFor="form-rhf-select-schedule">
+                  Schedule
+                </FieldLabel>
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
               </FieldContent>
               <Select
                 name={field.name}
@@ -72,7 +92,9 @@ export default function SlotEditor({
             <Field orientation="responsive" data-invalid={fieldState.invalid}>
               <FieldContent>
                 <FieldLabel htmlFor="form-rhf-select-title">Title</FieldLabel>
-                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
               </FieldContent>
               <Select
                 name={field.name}
@@ -88,7 +110,9 @@ export default function SlotEditor({
                 </SelectTrigger>
                 <SelectContent position="item-aligned">
                   {availableTitles?.map((title) => (
-                    <SelectItem key={title} value={title}>{title}</SelectItem>
+                    <SelectItem key={title} value={title}>
+                      {title}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -97,16 +121,26 @@ export default function SlotEditor({
         />
 
         <div className="grid grid-cols-2 gap-2">
-          <Button type="submit" variant="default">
-            Save
+          <Button
+            type="submit"
+            variant="default"
+            disabled={
+              form.formState.isSubmitting ||
+              !form.formState.isDirty
+            }
+          >
+            {form.formState.isSubmitting ? "Saving..." : "Save"}
           </Button>
-          <Button type="button" variant="outline" onClick={onCancel}>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onCancel}
+            disabled={form.formState.isSubmitting}
+          >
             Cancel
           </Button>
         </div>
-
       </FieldGroup>
-
     </form>
   )
 }

@@ -9,46 +9,47 @@ use LogMonitor\Backend\Repository\LogRepository;
 
 final class DashboardService
 {
-  public function __construct(
-    private DashboardRepository $dashboardRepository,
-    private LogRepository $logRepository,
-  ) {}
-
-  public function getSlotsWithLogs(): array
-  {
-    $slots = $this->dashboardRepository->getAllSlots();
-
-    $grouped = ['priority' => [], 'less_priority' => []];
-
-    foreach ($slots as $slot) {
-      $log = $slot['title'] ? $this->logRepository->getLatestLogByTitle($slot['title']) : null;
-
-      if ($log !== null && file_exists($log['file_path'])) {
-        $log['file_size'] = filesize($log['file_path']);
-      }
-
-      $grouped[$slot['section']][] = [
-        'slot_number' => (int) $slot['slot_number'],
-        'log'         => $log,
-        'schedule'   => $slot['schedule'],
-      ];
+    public function __construct(
+        private DashboardRepository $dashboardRepository,
+        private LogRepository $logRepository,
+    ) {
     }
 
-    return $grouped;
-  }
+    public function getSlotsWithLogs(): array
+    {
+        $slots = $this->dashboardRepository->getAllSlots();
 
-  public function getAllTitles(): array
-  {
-    return $this->logRepository->getAllTitles();
-  }
+        $grouped = ['priority' => [], 'less_priority' => []];
 
-  public function assignSlot(string $section, int $slotNumber, string $title, string $schedule): void
-  {
-    $this->dashboardRepository->assignSlot($section, $slotNumber, $title, $schedule);
-  }
+        foreach ($slots as $slot) {
+            $log = $slot['title'] ? $this->logRepository->getLatestLogByTitle($slot['title']) : null;
 
-  public function clearSlot(string $section, int $slotNumber): void
-  {
-    $this->dashboardRepository->clearSlot($section, $slotNumber);
-  }
+            if (null !== $log && \file_exists($log['file_path'])) {
+                $log['file_size'] = \filesize($log['file_path']);
+            }
+
+            $grouped[$slot['section']][] = [
+                'slot_number' => (int) $slot['slot_number'],
+                'log'         => $log,
+                'schedule'    => $slot['schedule'],
+            ];
+        }
+
+        return $grouped;
+    }
+
+    public function getAllTitles(): array
+    {
+        return $this->logRepository->getAllTitles();
+    }
+
+    public function assignSlot(string $section, int $slotNumber, string $title, string $schedule): void
+    {
+        $this->dashboardRepository->assignSlot($section, $slotNumber, $title, $schedule);
+    }
+
+    public function clearSlot(string $section, int $slotNumber): void
+    {
+        $this->dashboardRepository->clearSlot($section, $slotNumber);
+    }
 }

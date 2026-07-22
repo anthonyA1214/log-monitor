@@ -1,7 +1,7 @@
 import { env } from "@/env"
 import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query"
 import type { AddLogs, Log, LogContent, LogInfo } from "../schemas/logs"
-import camelcaseKeys from 'camelcase-keys'
+import camelcaseKeys from "camelcase-keys"
 
 async function syncLogs(): Promise<void> {
   const res = await fetch(`${env.VITE_API_URL}/api/logs/sync`, {
