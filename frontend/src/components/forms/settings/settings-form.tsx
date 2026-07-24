@@ -10,13 +10,14 @@ import {
 import { Button } from "@/components/ui/button"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useState } from "react"
-import { useForm } from "react-hook-form"
+import { Controller, useForm } from "react-hook-form"
 import { settingsSchema, type Settings } from "@/lib/schemas/settings"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { settingsQueryOptions, updateSettings } from "@/lib/api/settings"
 import { toast } from "sonner"
 import { useNavigate } from "@tanstack/react-router"
 import { syncLogs } from "@/lib/api/logs"
+import { TagsInput, TagsInputInput, TagsInputItem, TagsInputList } from "@/components/ui/tags-input"
 
 interface SettingsFormProps {
   data: Settings
@@ -29,6 +30,7 @@ export default function SettingsForm({ data }: SettingsFormProps) {
 
   const {
     register,
+    control,
     handleSubmit,
     reset,
     formState: { errors, isDirty },
@@ -36,9 +38,6 @@ export default function SettingsForm({ data }: SettingsFormProps) {
     resolver: zodResolver(settingsSchema),
     defaultValues: {
       ...data,
-      commonPrefix: Array.isArray(data.commonPrefix)
-        ? data.commonPrefix.join(", ")
-        : (data.commonPrefix ?? ""),
     },
     mode: "onTouched",
   })
@@ -117,12 +116,29 @@ export default function SettingsForm({ data }: SettingsFormProps) {
         {/* Common Prefix */}
         <Field data-invalid={!!errors.commonPrefix}>
           <FieldLabel htmlFor="file-name">Common Prefix</FieldLabel>
-          <Input
-            {...register("commonPrefix")}
-            aria-invalid={!!errors.commonPrefix}
-            id="common-prefix"
-            placeholder="e.g., error-, access_, log."
-            disabled={!isEditing}
+          <Controller
+            name="commonPrefix"
+            control={control}
+            render={({ field }) => (
+              <TagsInput
+                key={isEditing ? "editing" : "view"}
+                value={field.value ?? []}
+                onValueChange={field.onChange}
+                onBlur={field.onBlur}
+                disabled={!isEditing}
+              >
+                <TagsInputList>
+                  {(field.value ?? []).map((prefix, i) => (
+                    <TagsInputItem key={`${prefix}-${i}`} value={prefix}>
+                      {prefix}
+                    </TagsInputItem>
+                  ))}
+                  {isEditing && (
+                    <TagsInputInput placeholder="Add a prefix..." />
+                  )}
+                </TagsInputList>
+              </TagsInput>
+            )}
           />
           <FieldDescription>
             A common prefix to filter log files (e.g., <code>error_</code> for
