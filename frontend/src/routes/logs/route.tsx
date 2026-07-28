@@ -1,10 +1,10 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router"
 
-export const Route = createFileRoute("/logs/_logs")({
-  loader: () => {
-    return { crumb: "Logs" }
-  },
+export const Route = createFileRoute("/logs")({
   component: LogsLayoutComponent,
+  staticData: {
+    breadcrumb: "Logs",
+  }
 })
 
 function LogsLayoutComponent() {

@@ -121,7 +121,6 @@ export default function SettingsForm({ data }: SettingsFormProps) {
             control={control}
             render={({ field }) => (
               <TagsInput
-                key={isEditing ? "editing" : "view"}
                 value={field.value ?? []}
                 onValueChange={field.onChange}
                 onBlur={field.onBlur}
@@ -133,7 +132,7 @@ export default function SettingsForm({ data }: SettingsFormProps) {
                       {prefix}
                     </TagsInputItem>
                   ))}
-                  {isEditing && (
+                  {(isEditing || !(field.value ?? []).length) && (
                     <TagsInputInput placeholder="Add a prefix..." />
                   )}
                 </TagsInputList>

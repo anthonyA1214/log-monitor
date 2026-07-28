@@ -1,5 +1,5 @@
 import { SheetMenu } from "@/components/admin-panel/sheet-menu"
-import { AppBreadCrumb } from "../app-breadcrumb"
+import { RouterBreadcrumb } from "../router-breadcrumb"
 
 export function Navbar() {
   return (
@@ -7,7 +7,7 @@ export function Navbar() {
       <div className="mx-4 flex h-14 items-center sm:mx-8">
         <div className="flex items-center space-x-4 lg:space-x-0">
           <SheetMenu />
-          <AppBreadCrumb />
+          <RouterBreadcrumb />
         </div>
         {/* <div className="flex flex-1 items-center justify-end">
           <ModeToggle />

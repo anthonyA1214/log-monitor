@@ -53,14 +53,14 @@ export default function StatCard({
       <div className="flex-1" />
 
       {/* file name */}
-      <span className="truncate text-lg font-bold">{fileName}</span>
+      <span className="min-w-0 wrap-break-word text-base font-bold">{fileName}</span>
 
       {/* file modified at and file size */}
       <div className="flex items-center justify-between">
-        <span className="text-muted-foreground">
+        <span className="text-muted-foreground text-sm">
           {format(new Date(fileModifiedAt), "MM-dd-yyyy")}
         </span>
-        <span className="text-muted-foreground">{prettyBytes(fileSize)}</span>
+        <span className="text-muted-foreground text-sm">{prettyBytes(fileSize)}</span>
       </div>
     </div>
   )

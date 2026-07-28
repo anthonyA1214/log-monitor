@@ -18,7 +18,8 @@ async function fetchLogs(): Promise<Log[]> {
   if (!res.ok) {
     throw new Error("Failed to fetch logs")
   }
-  return await res.json()
+  const data = await res.json()
+  return camelcaseKeys(data, { deep: true })
 }
 
 async function fetchLogInfo(logId: string): Promise<LogInfo> {
@@ -27,7 +28,8 @@ async function fetchLogInfo(logId: string): Promise<LogInfo> {
     throw new Error(`Failed to fetch log info for ${logId}`)
   }
 
-  return await res.json()
+  const data = await res.json()
+  return camelcaseKeys(data, { deep: true })
 }
 
 async function fetchLogContent(
@@ -44,7 +46,8 @@ async function fetchLogContent(
     throw new Error(`Failed to fetch log content for ${logId}`)
   }
 
-  return await res.json()
+  const data = await res.json()
+  return camelcaseKeys(data, { deep: true })
 }
 
 async function addLogs(data: AddLogs): Promise<Log[]> {
@@ -68,7 +71,7 @@ async function addLogs(data: AddLogs): Promise<Log[]> {
     throw result
   }
 
-  return await res.json()
+  return result
 }
 
 async function updateLogInfo(
@@ -90,7 +93,8 @@ async function updateLogInfo(
     throw new Error(`Failed to update log info for ${logId}`)
   }
 
-  return await res.json()
+  const data = await res.json()
+  return camelcaseKeys(data, { deep: true })
 }
 
 export const logsQueryOptions = {
@@ -98,14 +102,12 @@ export const logsQueryOptions = {
     queryOptions({
       queryKey: ["logs"],
       queryFn: fetchLogs,
-      select: (data) => camelcaseKeys(data, { deep: true }),
     }),
 
   info: (logId: string) =>
     queryOptions({
       queryKey: ["logs", logId],
       queryFn: () => fetchLogInfo(logId),
-      select: (data) => camelcaseKeys(data, { deep: true }),
     }),
 
   content: (logId: string) =>
@@ -119,10 +121,6 @@ export const logsQueryOptions = {
         first.offset > 0
           ? Math.max(0, first.offset - 10 * 1024 * 1024)
           : undefined,
-      select: (data) => ({
-        pages: data.pages.map((page) => camelcaseKeys(page, { deep: true })),
-        pageParams: data.pageParams,
-      }),
     }),
 }
 

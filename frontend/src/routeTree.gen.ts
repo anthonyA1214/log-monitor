@@ -9,14 +9,24 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as LogsRouteRouteImport } from './routes/logs/route'
+import { Route as DashboardRouteRouteImport } from './routes/dashboard/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SettingsIndexRouteImport } from './routes/settings/index'
-import { Route as LogsLogsRouteImport } from './routes/logs/_logs'
-import { Route as DashboardDashboardRouteImport } from './routes/dashboard/_dashboard'
-import { Route as LogsLogsIndexRouteImport } from './routes/logs/_logs/index'
-import { Route as DashboardDashboardIndexRouteImport } from './routes/dashboard/_dashboard/index'
-import { Route as LogsLogsLogIdRouteImport } from './routes/logs/_logs/$logId'
+import { Route as LogsIndexRouteImport } from './routes/logs/index'
+import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
+import { Route as LogsLogIdRouteImport } from './routes/logs/$logId'
 
+const LogsRouteRoute = LogsRouteRouteImport.update({
+  id: '/logs',
+  path: '/logs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRouteRoute = DashboardRouteRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -27,57 +37,47 @@ const SettingsIndexRoute = SettingsIndexRouteImport.update({
   path: '/settings/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LogsLogsRoute = LogsLogsRouteImport.update({
-  id: '/logs/_logs',
-  path: '/logs',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DashboardDashboardRoute = DashboardDashboardRouteImport.update({
-  id: '/dashboard/_dashboard',
-  path: '/dashboard',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LogsLogsIndexRoute = LogsLogsIndexRouteImport.update({
+const LogsIndexRoute = LogsIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => LogsLogsRoute,
+  getParentRoute: () => LogsRouteRoute,
 } as any)
-const DashboardDashboardIndexRoute = DashboardDashboardIndexRouteImport.update({
+const DashboardIndexRoute = DashboardIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => DashboardDashboardRoute,
+  getParentRoute: () => DashboardRouteRoute,
 } as any)
-const LogsLogsLogIdRoute = LogsLogsLogIdRouteImport.update({
+const LogsLogIdRoute = LogsLogIdRouteImport.update({
   id: '/$logId',
   path: '/$logId',
-  getParentRoute: () => LogsLogsRoute,
+  getParentRoute: () => LogsRouteRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/dashboard': typeof DashboardDashboardRouteWithChildren
-  '/logs': typeof LogsLogsRouteWithChildren
+  '/dashboard': typeof DashboardRouteRouteWithChildren
+  '/logs': typeof LogsRouteRouteWithChildren
+  '/logs/$logId': typeof LogsLogIdRoute
+  '/dashboard/': typeof DashboardIndexRoute
+  '/logs/': typeof LogsIndexRoute
   '/settings/': typeof SettingsIndexRoute
-  '/logs/$logId': typeof LogsLogsLogIdRoute
-  '/dashboard/': typeof DashboardDashboardIndexRoute
-  '/logs/': typeof LogsLogsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/logs/$logId': typeof LogsLogIdRoute
+  '/dashboard': typeof DashboardIndexRoute
+  '/logs': typeof LogsIndexRoute
   '/settings': typeof SettingsIndexRoute
-  '/logs/$logId': typeof LogsLogsLogIdRoute
-  '/dashboard': typeof DashboardDashboardIndexRoute
-  '/logs': typeof LogsLogsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/dashboard/_dashboard': typeof DashboardDashboardRouteWithChildren
-  '/logs/_logs': typeof LogsLogsRouteWithChildren
+  '/dashboard': typeof DashboardRouteRouteWithChildren
+  '/logs': typeof LogsRouteRouteWithChildren
+  '/logs/$logId': typeof LogsLogIdRoute
+  '/dashboard/': typeof DashboardIndexRoute
+  '/logs/': typeof LogsIndexRoute
   '/settings/': typeof SettingsIndexRoute
-  '/logs/_logs/$logId': typeof LogsLogsLogIdRoute
-  '/dashboard/_dashboard/': typeof DashboardDashboardIndexRoute
-  '/logs/_logs/': typeof LogsLogsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -85,32 +85,46 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard'
     | '/logs'
-    | '/settings/'
     | '/logs/$logId'
     | '/dashboard/'
     | '/logs/'
+    | '/settings/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/settings' | '/logs/$logId' | '/dashboard' | '/logs'
+  to: '/' | '/logs/$logId' | '/dashboard' | '/logs' | '/settings'
   id:
     | '__root__'
     | '/'
-    | '/dashboard/_dashboard'
-    | '/logs/_logs'
+    | '/dashboard'
+    | '/logs'
+    | '/logs/$logId'
+    | '/dashboard/'
+    | '/logs/'
     | '/settings/'
-    | '/logs/_logs/$logId'
-    | '/dashboard/_dashboard/'
-    | '/logs/_logs/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  DashboardDashboardRoute: typeof DashboardDashboardRouteWithChildren
-  LogsLogsRoute: typeof LogsLogsRouteWithChildren
+  DashboardRouteRoute: typeof DashboardRouteRouteWithChildren
+  LogsRouteRoute: typeof LogsRouteRouteWithChildren
   SettingsIndexRoute: typeof SettingsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/logs': {
+      id: '/logs'
+      path: '/logs'
+      fullPath: '/logs'
+      preLoaderRoute: typeof LogsRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -125,73 +139,60 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/logs/_logs': {
-      id: '/logs/_logs'
-      path: '/logs'
-      fullPath: '/logs'
-      preLoaderRoute: typeof LogsLogsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dashboard/_dashboard': {
-      id: '/dashboard/_dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardDashboardRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/logs/_logs/': {
-      id: '/logs/_logs/'
+    '/logs/': {
+      id: '/logs/'
       path: '/'
       fullPath: '/logs/'
-      preLoaderRoute: typeof LogsLogsIndexRouteImport
-      parentRoute: typeof LogsLogsRoute
+      preLoaderRoute: typeof LogsIndexRouteImport
+      parentRoute: typeof LogsRouteRoute
     }
-    '/dashboard/_dashboard/': {
-      id: '/dashboard/_dashboard/'
+    '/dashboard/': {
+      id: '/dashboard/'
       path: '/'
       fullPath: '/dashboard/'
-      preLoaderRoute: typeof DashboardDashboardIndexRouteImport
-      parentRoute: typeof DashboardDashboardRoute
+      preLoaderRoute: typeof DashboardIndexRouteImport
+      parentRoute: typeof DashboardRouteRoute
     }
-    '/logs/_logs/$logId': {
-      id: '/logs/_logs/$logId'
+    '/logs/$logId': {
+      id: '/logs/$logId'
       path: '/$logId'
       fullPath: '/logs/$logId'
-      preLoaderRoute: typeof LogsLogsLogIdRouteImport
-      parentRoute: typeof LogsLogsRoute
+      preLoaderRoute: typeof LogsLogIdRouteImport
+      parentRoute: typeof LogsRouteRoute
     }
   }
 }
 
-interface DashboardDashboardRouteChildren {
-  DashboardDashboardIndexRoute: typeof DashboardDashboardIndexRoute
+interface DashboardRouteRouteChildren {
+  DashboardIndexRoute: typeof DashboardIndexRoute
 }
 
-const DashboardDashboardRouteChildren: DashboardDashboardRouteChildren = {
-  DashboardDashboardIndexRoute: DashboardDashboardIndexRoute,
+const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
+  DashboardIndexRoute: DashboardIndexRoute,
 }
 
-const DashboardDashboardRouteWithChildren =
-  DashboardDashboardRoute._addFileChildren(DashboardDashboardRouteChildren)
+const DashboardRouteRouteWithChildren = DashboardRouteRoute._addFileChildren(
+  DashboardRouteRouteChildren,
+)
 
-interface LogsLogsRouteChildren {
-  LogsLogsLogIdRoute: typeof LogsLogsLogIdRoute
-  LogsLogsIndexRoute: typeof LogsLogsIndexRoute
+interface LogsRouteRouteChildren {
+  LogsLogIdRoute: typeof LogsLogIdRoute
+  LogsIndexRoute: typeof LogsIndexRoute
 }
 
-const LogsLogsRouteChildren: LogsLogsRouteChildren = {
-  LogsLogsLogIdRoute: LogsLogsLogIdRoute,
-  LogsLogsIndexRoute: LogsLogsIndexRoute,
+const LogsRouteRouteChildren: LogsRouteRouteChildren = {
+  LogsLogIdRoute: LogsLogIdRoute,
+  LogsIndexRoute: LogsIndexRoute,
 }
 
-const LogsLogsRouteWithChildren = LogsLogsRoute._addFileChildren(
-  LogsLogsRouteChildren,
+const LogsRouteRouteWithChildren = LogsRouteRoute._addFileChildren(
+  LogsRouteRouteChildren,
 )
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  DashboardDashboardRoute: DashboardDashboardRouteWithChildren,
-  LogsLogsRoute: LogsLogsRouteWithChildren,
+  DashboardRouteRoute: DashboardRouteRouteWithChildren,
+  LogsRouteRoute: LogsRouteRouteWithChildren,
   SettingsIndexRoute: SettingsIndexRoute,
 }
 export const routeTree = rootRouteImport

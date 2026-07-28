@@ -67,6 +67,7 @@ export default function AddLogForm({ onSuccess }: AddLogFormProps) {
           })
         })
       } else {
+        console.error("Error adding log:", error)
         toast.error("An error occurred while adding the log")
       }
     },

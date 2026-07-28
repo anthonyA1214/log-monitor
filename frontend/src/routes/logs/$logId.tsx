@@ -13,13 +13,16 @@ import { Badge } from "@/components/ui/badge"
 import { fileStatusColorMap, sourceColorMap } from "@/lib/color-map"
 import { useEffect, useRef } from "react"
 
-export const Route = createFileRoute("/logs/_logs/$logId")({
+export const Route = createFileRoute("/logs/$logId")({
   loader: async ({ context: { queryClient }, params: { logId } }) => {
-    const data = await queryClient.ensureQueryData(logsQueryOptions.info(logId))
     await queryClient.ensureInfiniteQueryData(logsQueryOptions.content(logId))
-    return { crumb: data.fileName }
+    const info = await queryClient.ensureQueryData(logsQueryOptions.info(logId))
+    return { fileName: info.fileName }
   },
   component: LogsInfoPage,
+  staticData: {
+    breadcrumb: (match) => match.loaderData?.fileName ?? "Log Info",
+  },
 })
 
 function LogsInfoPage() {

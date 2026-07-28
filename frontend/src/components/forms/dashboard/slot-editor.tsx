@@ -47,10 +47,9 @@ export default function SlotEditor({
   return (
     <form
       onSubmit={form.handleSubmit(onSubmit)}
-      className="flex h-[15vh] flex-col justify-center rounded-lg border p-4"
+      className="flex flex-col justify-center"
     >
-      <FieldGroup className="scrollbar-thin overflow-y-auto">
-        <span>{currentTitle ? `Editing slot` : "Add slot"}</span>
+      <FieldGroup>
         <Controller
           name="schedule"
           control={form.control}

@@ -10,10 +10,12 @@ import { FieldDescription } from "@/components/ui/field"
 export const Route = createFileRoute("/settings/")({
   loader: ({ context: { queryClient } }) => {
     queryClient.ensureQueryData(settingsQueryOptions.all())
-    return { crumb: "Settings" }
   },
   errorComponent: () => <div>Failed to load settings</div>,
   component: SettingsPage,
+  staticData: {
+    breadcrumb: "Settings",
+  }
 })
 
 function SettingsPage() {

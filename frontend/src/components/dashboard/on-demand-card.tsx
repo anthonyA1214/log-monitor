@@ -14,9 +14,9 @@ export default function OnDemandCard({
 }: OnDemandCardProps) {
   return (
     <div className="flex h-fit flex-col justify-center gap-y-2 p-4">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-x-2">
         <span className="text-base font-medium">{fileName}</span>
-        <span className="text-sm text-muted-foreground">
+        <span className="text-sm text-muted-foreground text-nowrap">
           {format(new Date(fileModifiedAt), "MM-dd-yyyy")}
         </span>
       </div>

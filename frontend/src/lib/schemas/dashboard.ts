@@ -31,5 +31,12 @@ export const slotFormSchema = (titles: string[]) =>
       }),
   })
 
+export const onDemandExportsSchema = z.object({
+  fileName: z.string(),
+  fileModifiedAt: z.string(),
+  fileSize: z.number(),
+})
+
 export type Slots = z.infer<typeof slotsSchema>
 export type SlotForm = z.infer<ReturnType<typeof slotFormSchema>>
+export type OnDemandExports = z.infer<typeof onDemandExportsSchema>

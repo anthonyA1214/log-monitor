@@ -8,7 +8,7 @@ import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
 import { columns } from "./-columns"
 
-export const Route = createFileRoute("/logs/_logs/")({
+export const Route = createFileRoute("/logs/")({
   loader: ({ context: { queryClient } }) => {
     syncLogs() // Sync logs on page load
     return queryClient.ensureQueryData(logsQueryOptions.all())
@@ -19,6 +19,7 @@ export const Route = createFileRoute("/logs/_logs/")({
     </div>
   ),
   component: LogsPage,
+
 })
 
 function LogsPage() {
