@@ -123,10 +123,7 @@ export default function SlotEditor({
           <Button
             type="submit"
             variant="default"
-            disabled={
-              form.formState.isSubmitting ||
-              !form.formState.isDirty
-            }
+            disabled={form.formState.isSubmitting || !form.formState.isDirty}
           >
             {form.formState.isSubmitting ? "Saving..." : "Save"}
           </Button>
