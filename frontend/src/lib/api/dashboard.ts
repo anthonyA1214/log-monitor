@@ -64,6 +64,21 @@ async function fetchOnDemandExports(): Promise<OnDemandExports[]> {
   return res.json()
 }
 
+async function clearSlot(section: string, slotNumber: number): Promise<void> {
+  section = snakeCase(section)
+
+  const res = await fetch(
+    `${env.VITE_API_URL}/api/dashboard/slots/${section}/${slotNumber}`,
+    {
+      method: "DELETE",
+    }
+  )
+
+  if (!res.ok) {
+    throw new Error("Failed to clear slot")
+  }
+}
+
 export const dashboardQueryOptions = {
   slots: () =>
     queryOptions({
@@ -84,21 +99,6 @@ export const dashboardQueryOptions = {
       queryFn: fetchOnDemandExports,
       select: (data) => camelcaseKeys(data, { deep: true }),
     }),
-}
-
-async function clearSlot(section: string, slotNumber: number): Promise<void> {
-  section = snakeCase(section)
-
-  const res = await fetch(
-    `${env.VITE_API_URL}/api/dashboard/slots/${section}/${slotNumber}`,
-    {
-      method: "DELETE",
-    }
-  )
-
-  if (!res.ok) {
-    throw new Error("Failed to clear slot")
-  }
 }
 
 export { assignSlot, clearSlot }

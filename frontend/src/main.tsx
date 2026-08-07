@@ -1,6 +1,10 @@
 import { StrictMode } from "react"
 import { createRoot } from "react-dom/client"
-import { RouterProvider, createRouter, type AnyRouteMatch } from "@tanstack/react-router"
+import {
+  RouterProvider,
+  createRouter,
+  type AnyRouteMatch,
+} from "@tanstack/react-router"
 import { routeTree } from "./routeTree.gen"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import "./index.css"
@@ -20,7 +24,10 @@ const router = createRouter({
   scrollRestoration: true,
 })
 
-type BreadcrumbValue = string | string[] | ((match: AnyRouteMatch) => string | string[]);
+type BreadcrumbValue =
+  | string
+  | string[]
+  | ((match: AnyRouteMatch) => string | string[])
 
 // Register the router instance for type safety
 declare module "@tanstack/react-router" {
@@ -28,7 +35,7 @@ declare module "@tanstack/react-router" {
     router: typeof router
   }
   interface StaticDataRouteOption {
-    breadcrumb?: BreadcrumbValue;
+    breadcrumb?: BreadcrumbValue
   }
 }
 

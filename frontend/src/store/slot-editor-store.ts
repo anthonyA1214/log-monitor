@@ -6,11 +6,13 @@ interface SlotEditorState {
     currentSchedule?: "recursive" | "daily"
     section: "priority" | "lessPriority"
     slotNumber: number
+    type: "edit/add" | "clear"
   } | null
   open: boolean
   openDialog: (
     section: "priority" | "lessPriority",
     slotNumber: number | null,
+    type: "edit/add" | "clear",
     currentTitle?: string,
     currentSchedule?: "recursive" | "daily"
   ) => void
@@ -20,17 +22,16 @@ interface SlotEditorState {
 export const useSlotEditorStore = create<SlotEditorState>((set) => ({
   editingSlot: null,
   open: false,
-  openDialog: (section, slotNumber, currentTitle, currentSchedule) =>
+  openDialog: (section, slotNumber, type, currentTitle, currentSchedule) =>
     set({
       editingSlot:
         slotNumber !== null
-          ? { currentTitle, currentSchedule, section, slotNumber }
+          ? { currentTitle, currentSchedule, section, slotNumber, type }
           : null,
       open: slotNumber !== null,
     }),
-  closeDialog: () =>
-    set({
-      editingSlot: null,
-      open: false,
-    }),
+  closeDialog: () => {
+    set({ open: false })
+    setTimeout(() => set({ editingSlot: null }), 200)
+  },
 }))

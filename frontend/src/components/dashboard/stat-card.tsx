@@ -1,19 +1,20 @@
 import { dashboardStatCardDotColorMap } from "@/lib/color-map"
 import { cn } from "@/lib/utils"
 import { format } from "date-fns"
-import { Pencil, Trash2, X } from "lucide-react"
+import { Eraser, Pencil } from "lucide-react"
 import prettyBytes from "pretty-bytes"
 import { Button } from "../ui/button"
 import { useState } from "react"
+import { useIsMobile } from "@/hooks/use-is-mobile"
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip"
 
 interface StatCardProps {
   schedule: string
   fileName: string
   fileModifiedAt: string
   fileSize: number
-  onClick: () => void
+  onEdit: () => void
   onClear?: () => void
-  isEditing?: boolean
 }
 
 export default function StatCard({
@@ -21,11 +22,11 @@ export default function StatCard({
   fileName,
   fileModifiedAt,
   fileSize,
-  onClick,
+  onEdit,
   onClear,
-  isEditing = false,
 }: StatCardProps) {
   const [hover, setHover] = useState(false)
+  const isMobile = useIsMobile()
 
   return (
     <div
@@ -34,7 +35,7 @@ export default function StatCard({
       onMouseLeave={() => setHover(false)}
     >
       {/* label */}
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-x-4">
         <div className="flex items-center gap-2">
           <div
             className={cn(
@@ -48,26 +49,29 @@ export default function StatCard({
         <div
           className={cn(
             "flex items-center gap-1",
-            "md:opacity-0 md:transition-opacity",
-            hover && "md:opacity-100"
+            isMobile ? "opacity-100" : hover ? "opacity-100" : "opacity-0"
           )}
         >
-          {onClear && (
-            <Button
-              size="icon-xs"
-              variant="ghost"
-              onClick={(e) => {
-                e.stopPropagation()
-                onClear()
-              }}
-            >
-              <Trash2 />
-            </Button>
-          )}
-
-          <Button size="icon-xs" variant="ghost" onClick={onClick}>
-            {isEditing ? <X /> : <Pencil />}
-          </Button>
+          <Tooltip>
+            <TooltipTrigger>
+              <Button size="icon-xs" variant="ghost" onClick={onEdit}>
+                <Pencil />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Edit Slot</p>
+            </TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger>
+              <Button size="icon-xs" variant="ghost" onClick={onClear}>
+                <Eraser />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Clear Slot</p>
+            </TooltipContent>
+          </Tooltip>
         </div>
       </div>
 

@@ -38,7 +38,10 @@ export default function SlotEditorDialog() {
   }
 
   return (
-    <Dialog open={open} onOpenChange={closeDialog}>
+    <Dialog
+      open={open && editingSlot?.type === "edit/add"}
+      onOpenChange={closeDialog}
+    >
       <DialogContent>
         <DialogHeader>
           <DialogTitle>

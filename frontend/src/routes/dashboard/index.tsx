@@ -10,13 +10,9 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty"
 import { Separator } from "@/components/ui/separator"
-import { clearSlot, dashboardQueryOptions } from "@/lib/api/dashboard"
+import { dashboardQueryOptions } from "@/lib/api/dashboard"
 import { useSlotEditorStore } from "@/store/slot-editor-store"
-import {
-  useMutation,
-  useQueryClient,
-  useSuspenseQuery,
-} from "@tanstack/react-query"
+import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
 import { FileX } from "lucide-react"
 import { Fragment } from "react/jsx-runtime"
@@ -37,8 +33,7 @@ export const Route = createFileRoute("/dashboard/")({
 })
 
 function RouteComponent() {
-  const { openDialog } = useSlotEditorStore()
-  const queryClient = useQueryClient()
+  const { openDialog: openSlotEditorDialog } = useSlotEditorStore()
 
   const slots = useSuspenseQuery({
     ...dashboardQueryOptions.slots(),
@@ -46,21 +41,6 @@ function RouteComponent() {
 
   const onDemandExports = useSuspenseQuery({
     ...dashboardQueryOptions.exports(),
-  })
-
-  const { mutate: clearSlotMutate } = useMutation({
-    mutationFn: ({
-      section,
-      slotNumber,
-    }: {
-      section: string
-      slotNumber: number
-    }) => clearSlot(section, slotNumber),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: dashboardQueryOptions.slots().queryKey,
-      })
-    },
   })
 
   return (
@@ -78,7 +58,7 @@ function RouteComponent() {
           </span>
         </div>
 
-        <div className="scrollbar-thin grid min-h-0 flex-1 grid-cols-1 gap-4 overflow-y-auto lg:grid-cols-[minmax(0,2fr)_minmax(260px,0.5fr)] lg:overflow-hidden">
+        <div className="scrollbar-thin grid min-h-0 flex-1 grid-cols-1 gap-4 overflow-y-auto lg:grid-cols-[2fr_0.5fr] lg:overflow-hidden">
           {/* left side */}
           <div className="flex flex-col gap-y-4 lg:min-h-0 lg:overflow-y-auto">
             {/* priority */}
@@ -88,7 +68,7 @@ function RouteComponent() {
                 <div className="h-px flex-1 bg-border" />
               </div>
 
-              <div className="grid grid-cols-1 gap-4 rounded-lg border p-4 xs:grid-cols-2 md:grid-cols-4">
+              <div className="grid grid-cols-1 gap-4 rounded-lg border p-4 sm:grid-cols-2 xl:grid-cols-4">
                 {slots.data.priority.map((item) =>
                   item.log !== null ? (
                     <StatCard
@@ -97,25 +77,34 @@ function RouteComponent() {
                       fileName={item.log.fileName}
                       fileModifiedAt={item.log.fileModifiedAt}
                       fileSize={item.log.fileSize}
-                      onClick={() =>
-                        openDialog(
+                      onEdit={() =>
+                        openSlotEditorDialog(
                           "priority",
                           item?.slotNumber,
+                          "edit/add",
                           item?.log?.title,
                           item?.schedule
                         )
                       }
                       onClear={() =>
-                        clearSlotMutate({
-                          section: "priority",
-                          slotNumber: item.slotNumber,
-                        })
+                        openSlotEditorDialog(
+                          "priority",
+                          item?.slotNumber,
+                          "clear",
+                          item?.log?.title
+                        )
                       }
                     />
                   ) : (
                     <EmptyStatCard
                       key={`priority-empty-stat-card-${item.slotNumber}`}
-                      onClick={() => openDialog("priority", item?.slotNumber)}
+                      onClick={() =>
+                        openSlotEditorDialog(
+                          "priority",
+                          item?.slotNumber,
+                          "edit/add"
+                        )
+                      }
                     />
                   )
                 )}
@@ -129,7 +118,7 @@ function RouteComponent() {
                 <div className="h-px flex-1 bg-border" />
               </div>
 
-              <div className="grid grid-cols-1 gap-4 rounded-lg border p-4 xs:grid-cols-2 md:grid-cols-4">
+              <div className="grid grid-cols-1 gap-4 rounded-lg border p-4 sm:grid-cols-2 xl:grid-cols-4">
                 {slots.data.lessPriority.map((item) =>
                   item.log !== null ? (
                     <StatCard
@@ -138,26 +127,33 @@ function RouteComponent() {
                       fileName={item.log.fileName}
                       fileModifiedAt={item.log.fileModifiedAt}
                       fileSize={item.log.fileSize}
-                      onClick={() =>
-                        openDialog(
+                      onEdit={() =>
+                        openSlotEditorDialog(
                           "lessPriority",
                           item?.slotNumber,
+                          "edit/add",
                           item?.log?.title,
                           item?.schedule
                         )
                       }
                       onClear={() =>
-                        clearSlotMutate({
-                          section: "lessPriority",
-                          slotNumber: item.slotNumber,
-                        })
+                        openSlotEditorDialog(
+                          "lessPriority",
+                          item?.slotNumber,
+                          "clear",
+                          item?.log?.title
+                        )
                       }
                     />
                   ) : (
                     <EmptyStatCard
                       key={`lessPriority-empty-stat-card-${item.slotNumber}`}
                       onClick={() =>
-                        openDialog("lessPriority", item?.slotNumber)
+                        openSlotEditorDialog(
+                          "lessPriority",
+                          item?.slotNumber,
+                          "edit/add"
+                        )
                       }
                     />
                   )
