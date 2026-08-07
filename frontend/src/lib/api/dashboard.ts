@@ -36,13 +36,15 @@ async function assignSlot(
   )
   section = snakeCase(section)
 
-  const res = await fetch(`${env.VITE_API_URL}/api/dashboard/slots/${section}/${slotNumber}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(payload),
-  }
+  const res = await fetch(
+    `${env.VITE_API_URL}/api/dashboard/slots/${section}/${slotNumber}`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    }
   )
 
   if (!res.ok) {
@@ -60,6 +62,21 @@ async function fetchOnDemandExports(): Promise<OnDemandExports[]> {
   }
 
   return res.json()
+}
+
+async function clearSlot(section: string, slotNumber: number): Promise<void> {
+  section = snakeCase(section)
+
+  const res = await fetch(
+    `${env.VITE_API_URL}/api/dashboard/slots/${section}/${slotNumber}`,
+    {
+      method: "DELETE",
+    }
+  )
+
+  if (!res.ok) {
+    throw new Error("Failed to clear slot")
+  }
 }
 
 export const dashboardQueryOptions = {
@@ -84,4 +101,4 @@ export const dashboardQueryOptions = {
     }),
 }
 
-export { assignSlot }
+export { assignSlot, clearSlot }

@@ -15,7 +15,7 @@ export const Route = createFileRoute("/settings/")({
   component: SettingsPage,
   staticData: {
     breadcrumb: "Settings",
-  }
+  },
 })
 
 function SettingsPage() {

@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button"
+import { DialogFooter } from "@/components/ui/dialog"
 import {
   Field,
   FieldContent,
@@ -119,14 +120,11 @@ export default function SlotEditor({
           )}
         />
 
-        <div className="grid grid-cols-2 gap-2">
+        <DialogFooter>
           <Button
             type="submit"
             variant="default"
-            disabled={
-              form.formState.isSubmitting ||
-              !form.formState.isDirty
-            }
+            disabled={form.formState.isSubmitting || !form.formState.isDirty}
           >
             {form.formState.isSubmitting ? "Saving..." : "Save"}
           </Button>
@@ -138,7 +136,7 @@ export default function SlotEditor({
           >
             Cancel
           </Button>
-        </div>
+        </DialogFooter>
       </FieldGroup>
     </form>
   )

@@ -14,10 +14,14 @@
   scrollbar-width: none; /* Firefox */
 }
 
+
 @theme {
   --color-navy-blue: #000080;
 }
 
+@theme {
+  --breakpoint-xs: 480px;
+}
 @theme inline {
   --font-heading: var(--font-sans);
   --font-sans: "Lato", sans-serif;

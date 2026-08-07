@@ -5,44 +5,51 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb'; // This is coming straight from shadcn/ui
-import { type AnyRouteMatch, Link, useMatches } from '@tanstack/react-router';
-import { Fragment } from 'react';
+} from "@/components/ui/breadcrumb" // This is coming straight from shadcn/ui
+import { type AnyRouteMatch, Link, useMatches } from "@tanstack/react-router"
+import { Fragment } from "react"
 
-export type BreadcrumbValue = string | string[] | ((match: AnyRouteMatch) => string | string[]);
+export type BreadcrumbValue =
+  | string
+  | string[]
+  | ((match: AnyRouteMatch) => string | string[])
 
 type ResolvedBreadcrumbItem = {
-  path: string;
-  label: string;
-};
+  path: string
+  label: string
+}
 
 export function RouterBreadcrumb() {
-  const matches = useMatches();
+  const matches = useMatches()
 
   const breadcrumbs: ResolvedBreadcrumbItem[] = matches.flatMap((match) => {
-    const staticData = match.staticData;
-    if (!staticData?.breadcrumb) return [];
+    const staticData = match.staticData
+    if (!staticData?.breadcrumb) return []
 
     const breadcrumbValue =
-      typeof staticData.breadcrumb === 'function' ? staticData.breadcrumb(match) : staticData.breadcrumb;
+      typeof staticData.breadcrumb === "function"
+        ? staticData.breadcrumb(match)
+        : staticData.breadcrumb
 
-    const items = Array.isArray(breadcrumbValue) ? breadcrumbValue : [breadcrumbValue];
+    const items = Array.isArray(breadcrumbValue)
+      ? breadcrumbValue
+      : [breadcrumbValue]
 
     return items.map((item) => ({
       label: item,
       path: match.pathname,
-    }));
-  });
+    }))
+  })
 
   if (breadcrumbs.length === 0) {
-    return null;
+    return null
   }
 
   return (
     <Breadcrumb>
       <BreadcrumbList>
         {breadcrumbs.map((crumb, index) => {
-          const isLast = index === breadcrumbs.length - 1;
+          const isLast = index === breadcrumbs.length - 1
 
           return (
             <Fragment key={`${crumb.path}-${index}`}>
@@ -57,9 +64,9 @@ export function RouterBreadcrumb() {
               </BreadcrumbItem>
               {!isLast && <BreadcrumbSeparator />}
             </Fragment>
-          );
+          )
         })}
       </BreadcrumbList>
     </Breadcrumb>
-  );
+  )
 }

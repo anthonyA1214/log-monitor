@@ -19,7 +19,6 @@ export const Route = createFileRoute("/logs/")({
     </div>
   ),
   component: LogsPage,
-
 })
 
 function LogsPage() {

@@ -17,7 +17,12 @@ import { settingsQueryOptions, updateSettings } from "@/lib/api/settings"
 import { toast } from "sonner"
 import { useNavigate } from "@tanstack/react-router"
 import { syncLogs } from "@/lib/api/logs"
-import { TagsInput, TagsInputInput, TagsInputItem, TagsInputList } from "@/components/ui/tags-input"
+import {
+  TagsInput,
+  TagsInputInput,
+  TagsInputItem,
+  TagsInputList,
+} from "@/components/ui/tags-input"
 
 interface SettingsFormProps {
   data: Settings

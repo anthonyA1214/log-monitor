@@ -4,7 +4,7 @@ export const Route = createFileRoute("/logs")({
   component: LogsLayoutComponent,
   staticData: {
     breadcrumb: "Logs",
-  }
+  },
 })
 
 function LogsLayoutComponent() {

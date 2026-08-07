@@ -4,16 +4,20 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { assignSlot, dashboardQueryOptions } from "@/lib/api/dashboard";
-import type { SlotForm } from "@/lib/schemas/dashboard";
+import { assignSlot, dashboardQueryOptions } from "@/lib/api/dashboard"
+import type { SlotForm } from "@/lib/schemas/dashboard"
 import { useSlotEditorStore } from "@/store/slot-editor-store"
-import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import SlotEditor from "../forms/dashboard/slot-editor";
+import {
+  useMutation,
+  useQueryClient,
+  useSuspenseQuery,
+} from "@tanstack/react-query"
+import SlotEditor from "../forms/dashboard/slot-editor"
 
 export default function SlotEditorDialog() {
   const queryClient = useQueryClient()
 
-  const { open, closeDialog, editingSlot } = useSlotEditorStore();
+  const { open, closeDialog, editingSlot } = useSlotEditorStore()
   const titles = useSuspenseQuery({
     ...dashboardQueryOptions.titles(),
   })
@@ -34,10 +38,15 @@ export default function SlotEditorDialog() {
   }
 
   return (
-    <Dialog open={open} onOpenChange={closeDialog}>
+    <Dialog
+      open={open && editingSlot?.type === "edit/add"}
+      onOpenChange={closeDialog}
+    >
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{editingSlot?.currentTitle ? `Editing slot` : "Add slot"}</DialogTitle>
+          <DialogTitle>
+            {editingSlot?.currentTitle ? `Editing slot` : "Add slot"}
+          </DialogTitle>
         </DialogHeader>
 
         <SlotEditor
