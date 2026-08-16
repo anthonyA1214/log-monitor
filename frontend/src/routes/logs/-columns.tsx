@@ -1,5 +1,3 @@
-"use client"
-
 import { type ColumnDef } from "@tanstack/react-table"
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
@@ -7,16 +5,13 @@ import { Link } from "@tanstack/react-router"
 import type { Log } from "@/lib/schemas/logs"
 import { fileStatusColorMap, sourceColorMap } from "@/lib/color-map"
 import { useLogsStore } from "@/store/logs-store"
-import { Edit, Minus, Plus } from "lucide-react"
+import { Edit, Eraser, Minus, Plus } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
 
 export const columns: ColumnDef<Log>[] = [
   {
@@ -118,13 +113,25 @@ function ActionCell({ row }: { row: Log }) {
   return (
     <div className="flex justify-center gap-2">
       <Tooltip>
-        <TooltipTrigger onClick={() => openDialog(row.id)}>
+        <TooltipTrigger onClick={() => openDialog(row.id, "edit")}>
           <Edit size={16} />
         </TooltipTrigger>
         <TooltipContent>
           <span>Edit Log</span>
         </TooltipContent>
       </Tooltip>
+      {row.source === "manual" && (
+        <Tooltip>
+          <TooltipTrigger
+            onClick={() => openDialog(row.id, "delete", row.fileName)}
+          >
+            <Eraser size={16} />
+          </TooltipTrigger>
+          <TooltipContent>
+            <span>Delete Log</span>
+          </TooltipContent>
+        </Tooltip>
+      )}
     </div>
   )
 }

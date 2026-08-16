@@ -182,6 +182,25 @@ final class LogService
         ];
     }
 
+    public function deleteLog(string $logId): bool
+    {
+        $log = $this->logRepository->findById((int) $logId);
+
+        if (!$log) {
+            return false;
+        }
+
+        $filePath = $log['file_path'];
+
+        if (\file_exists($filePath)) {
+            \unlink($filePath);
+        }
+
+        $this->logRepository->deleteById((int) $logId);
+
+        return true;
+    }
+
     public function updateLogInfo(string $logId, array $data): ?array
     {
         // Implementation for updating log info (e.g., title) by log ID

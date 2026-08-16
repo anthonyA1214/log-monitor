@@ -6,32 +6,32 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { Button } from "../ui/button"
-import { useSlotEditorStore } from "@/store/slot-editor-store"
+import { Button } from "@/components/ui/button"
+import { useLogsStore } from "@/store/logs-store"
+import { deleteLog, logsQueryOptions } from "@/lib/api/logs"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { clearSlot, dashboardQueryOptions } from "@/lib/api/dashboard"
 import { toast } from "sonner"
 
-export default function ClearSlotDialog() {
+export default function DeleteLogDialog() {
   const queryClient = useQueryClient()
-  const { open, closeDialog, editingSlot } = useSlotEditorStore()
+  const { log, open, closeDialog } = useLogsStore()
 
   const { mutateAsync, isPending } = useMutation({
     mutationFn: () => {
-      if (!editingSlot) {
+      if (!log) {
         throw new Error("No slot selected to clear")
       }
-      return clearSlot(editingSlot.section, editingSlot.slotNumber)
+      return deleteLog(log.logId!)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: dashboardQueryOptions.slots().queryKey,
+        queryKey: logsQueryOptions.all().queryKey,
       })
-      toast.success("Slot cleared successfully")
+      toast.success("Log deleted successfully")
       closeDialog()
     },
     onError: () => {
-      toast.error("Failed to clear slot")
+      toast.error("Failed to delete log")
     },
   })
 
@@ -44,16 +44,13 @@ export default function ClearSlotDialog() {
   }
 
   return (
-    <Dialog
-      open={open && editingSlot?.type === "clear"}
-      onOpenChange={closeDialog}
-    >
+    <Dialog open={open && log?.type === "delete"} onOpenChange={closeDialog}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Clear this slot?</DialogTitle>
+          <DialogTitle>Delete this log?</DialogTitle>
           <DialogDescription>
-            This will clear "{editingSlot?.currentTitle}". The data itself won't
-            be deleted.
+            This will delete "{log?.fileName}". The file itself won't be
+            deleted.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
@@ -63,7 +60,7 @@ export default function ClearSlotDialog() {
             onClick={handleClear}
             disabled={isPending}
           >
-            {isPending ? "Clearing..." : "Clear"}
+            {isPending ? "Deleteing..." : "Delete"}
           </Button>
           <Button
             type="button"

@@ -23,8 +23,12 @@ export default function SlotEditorDialog() {
   })
 
   const { mutateAsync } = useMutation({
-    mutationFn: (data: SlotForm) =>
-      assignSlot(editingSlot?.section!, editingSlot?.slotNumber!, data),
+    mutationFn: (data: SlotForm) => {
+      if (!editingSlot) {
+        throw new Error("No slot selected to assign")
+      }
+      return assignSlot(editingSlot.section, editingSlot.slotNumber, data)
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: dashboardQueryOptions.slots().queryKey,

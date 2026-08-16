@@ -27,6 +27,7 @@ return static function (App $app): void {
             $group->get('/{logId}', [LogController::class, 'show']);
             $group->get('/{logId}/content', [LogController::class, 'getContent']);
             $group->patch('/{logId}', [LogController::class, 'update']);
+            $group->delete('/{logId}', [LogController::class, 'destroy']);
         });
 
         // api/settings

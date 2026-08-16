@@ -274,6 +274,15 @@ final class LogRepository
         ]);
     }
 
+    public function deleteById(int $id): void
+    {
+        $sql  = "DELETE FROM log_files WHERE id = :id AND source = 'manual'";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            ':id' => $id,
+        ]);
+    }
+
     public function getAllTitles(): array
     {
         $stmt = $this->pdo->query('SELECT DISTINCT title FROM log_files WHERE title IS NOT NULL ORDER BY title');

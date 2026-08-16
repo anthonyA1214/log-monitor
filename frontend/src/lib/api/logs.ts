@@ -97,6 +97,19 @@ async function updateLogInfo(
   return camelcaseKeys(data, { deep: true })
 }
 
+async function deleteLog(logId: string): Promise<void> {
+  const res = await fetch(`${env.VITE_API_URL}/api/logs/${logId}`, {
+    method: "DELETE",
+  })
+
+  if (!res.ok) {
+    throw new Error(`Failed to delete log ${logId}`)
+  }
+
+  const data = await res.json()
+  return camelcaseKeys(data, { deep: true })
+}
+
 export const logsQueryOptions = {
   all: () =>
     queryOptions({
@@ -124,4 +137,4 @@ export const logsQueryOptions = {
     }),
 }
 
-export { syncLogs, updateLogInfo, addLogs }
+export { syncLogs, updateLogInfo, addLogs, deleteLog }

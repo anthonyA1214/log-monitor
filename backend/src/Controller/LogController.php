@@ -150,4 +150,13 @@ final class LogController
 
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
+
+    public function destroy(Request $request, Response $response, string $logId): Response
+    {
+        $this->logService->deleteLog($logId);
+
+        $response->getBody()->write(\json_encode(['message' => 'Log deleted successfully']));
+
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+    }
 }

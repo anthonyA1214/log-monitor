@@ -7,6 +7,7 @@ import { useLogsStore } from "@/store/logs-store"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
 import { columns } from "./-columns"
+import DeleteLogDialog from "@/components/delete-log-dialog"
 
 export const Route = createFileRoute("/logs/")({
   loader: ({ context: { queryClient } }) => {
@@ -27,7 +28,7 @@ function LogsPage() {
     ...logsQueryOptions.all(),
     refetchInterval: 5000, // Refetch every 5 seconds
   })
-  const { logId } = useLogsStore()
+  const { log } = useLogsStore()
 
   return (
     <ContentLayout>
@@ -54,7 +55,8 @@ function LogsPage() {
         <DataTable columns={columns} data={data} />
       </div>
 
-      {logId && <EditLogDialog />}
+      {log?.logId && log?.type === "edit" && <EditLogDialog />}
+      {log?.logId && log?.type === "delete" && <DeleteLogDialog />}
     </ContentLayout>
   )
 }
